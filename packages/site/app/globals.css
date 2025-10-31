@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Font mặc định Windows (Segoe UI) - Áp dụng cho toàn bộ ứng dụng */
+* {
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+}
+
+body {
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+}
+
+/* Đảm bảo tất cả elements sử dụng font Segoe UI */
+h1, h2, h3, h4, h5, h6, p, span, div, button, input, textarea, select, label, a {
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+}
+
+/* Primary Background */
+.bg-primary {
+  background-color: #1B1F2C;
+}
+
+/* Secondary Background */
+.bg-secondary {
+  background-color: #272D3E;
+}
+
+/* Tertiary Background */
+.bg-tertiary {
+  background-color: #212635;
+}
+
+/* Header Background */
+.bg-header {
+  background-color: #1B1F2C;
+}
+
+/* Border Color */
+.border-custom {
+  border-color: #2D3343;
+}
+
+.zama-cyan {
+  background-color: #11B2BA;
+}
+
+.zama-cyan:hover {
+  background-color: #12949D;
+}
+
+/* Nút mới */
+.btn-primary {
+  background-color: #00c3cc;
+  border-radius: 8px; /* rounded-lg equivalent */
+}
+
+.btn-primary:hover {
+  background-color: #12949D;
+}
+
+/* Nút transparent với bo góc */
+.btn-transparent {
+  border-radius: 8px; /* rounded-lg equivalent */
+  border: 1px solid #2D3343; /* border-custom */
+}
+
+.btn-transparent:hover {
+  background-color: #4B5563; /* gray-600 */
+  border-radius: 8px;
+  border: 1px solid #2D3343; /* border-custom */
+}
+
+/* Nút inactive với bo góc */
+.btn-inactive {
+  background-color: #4B5563; /* gray-600 */
+  border-radius: 8px; /* rounded-lg equivalent */
+  border: 1px solid #2D3343; /* border-custom */
+}
+
+.btn-inactive:hover {
+  background-color: #6B7280; /* gray-500 */
+  border-radius: 8px;
+  border: 1px solid #2D3343; /* border-custom */
+}
+
+/* Nút primary với viền */
+.btn-primary {
+  background-color: #00c3cc;
+  border-radius: 8px; /* rounded-lg equivalent */
+  border: 1px solid #2D3343; /* border-custom */
+}
+
+.btn-primary:hover {
+  background-color: #12949D;
+  border: 1px solid #2D3343; /* border-custom */
+}
+
+/* Bỏ nút tăng/giảm cho input number */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.zama-bg {
+  background-color: #111827;
+}
+
+.header-bg {
+  background-color: #ffd200;
+}
+
+.zama-yellow {
+  background-color: #ffd200;
+}
+
+.zama-yellow:hover {
+  background-color: #ffb243;
+}
+
+/* ===== COLOR STANDARDS ===== */
+.text-white {
+  color: #ffffff;
+}
+
+.text-black {
+  color: #000000;
+}
+
+.text-gray {
+  color: #9ca3af;
+}
