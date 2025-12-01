@@ -19,12 +19,12 @@ export default async function RootLayout({
     <html lang="en">
       <head>
       </head>
-      <body className="bg-primary text-foreground antialiased">
+      <body className="text-foreground antialiased" style={{ backgroundColor: '#272D3E' }}>
         <Script
           src="https://cdn.zama.org/relayer-sdk-js/0.3.0-5/relayer-sdk-js.umd.cjs"
           strategy="afterInteractive"
         />
-        <div className="fixed inset-0 w-full h-full bg-primary z-[-20] min-w-[850px]" />
+        <div className="fixed inset-0 w-full h-full z-[-20] min-w-[850px]" style={{ backgroundColor: '#272D3E' }} />
         
         <main className="flex flex-col w-full min-h-screen" suppressHydrationWarning>
           <Providers>
