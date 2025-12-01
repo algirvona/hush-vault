@@ -31,10 +31,15 @@ function throwFhevmError(
 }
 
 const isFhevmInitialized = (): boolean => {
-  if (typeof window === 'undefined' || !isFhevmWindowType(window, console.log)) {
+  if (typeof window === 'undefined') {
     return false;
   }
-  return window.relayerSDK.__initialized__ === true;
+  // Check cả 2 tên: RelayerSDK (chữ R hoa) và relayerSDK (chữ r thường)
+  const sdk = (window as any).RelayerSDK || (window as any).relayerSDK;
+  if (!sdk || typeof sdk.__initialized__ !== 'boolean') {
+    return false;
+  }
+  return sdk.__initialized__ === true;
 };
 
 const fhevmLoadSDK: FhevmLoadSDKType = () => {
@@ -45,11 +50,20 @@ const fhevmLoadSDK: FhevmLoadSDKType = () => {
 const fhevmInitSDK: FhevmInitSDKType = async (
   options?: FhevmInitSDKOptions
 ) => {
-  if (typeof window === 'undefined' || !isFhevmWindowType(window, console.log)) {
-    throw new Error("window.relayerSDK is not available");
+  if (typeof window === 'undefined') {
+    throw new Error("window is not available");
   }
-  const result = await window.relayerSDK.initSDK(options);
-  window.relayerSDK.__initialized__ = result;
+  // Check cả 2 tên: RelayerSDK (chữ R hoa) và relayerSDK (chữ r thường)
+  const sdk = (window as any).RelayerSDK || (window as any).relayerSDK;
+  if (!sdk) {
+    throw new Error("window.RelayerSDK/relayerSDK is not available");
+  }
+  // Đảm bảo window.relayerSDK tồn tại
+  if (!(window as any).relayerSDK) {
+    (window as any).relayerSDK = sdk;
+  }
+  const result = await sdk.initSDK(options);
+  sdk.__initialized__ = result;
   if (!result) {
     throw new Error("window.relayerSDK.initSDK failed.");
   }
@@ -267,22 +281,10 @@ export const createFhevmInstance = async (parameters: {
   if (typeof window === 'undefined' || !isFhevmWindowType(window, console.log)) {
     notify("sdk-loading");
 
-    // Initialize WASM first, then create instance
-    try {
-      if (typeof window !== 'undefined') {
-        const { initSDK, createInstance, SepoliaConfig } = await import("@zama-fhe/relayer-sdk/bundle");
-        await initSDK(); // Load FHE WASM
-        const config = { ...SepoliaConfig, network: window.ethereum };
-        const sdk = await createInstance(config);
-        (window as any).relayerSDK = sdk;
-        notify("sdk-loaded");
-      }
-    } catch (error) {
-      // Fallback to CDN if static import fails
-      await fhevmLoadSDK();
-      throwIfAborted();
-      notify("sdk-loaded");
-    }
+    // Chỉ dùng CDN, không dùng static import
+    await fhevmLoadSDK();
+    throwIfAborted();
+    notify("sdk-loaded");
   }
 
   // notify that state === "sdk-loaded"
@@ -297,7 +299,8 @@ export const createFhevmInstance = async (parameters: {
     notify("sdk-initialized");
   }
 
-  const relayerSDK = (window as unknown as FhevmWindowType).relayerSDK;
+  // Check cả 2 tên: RelayerSDK (chữ R hoa) và relayerSDK (chữ r thường)
+  const relayerSDK = (window as any).RelayerSDK || (window as any).relayerSDK;
 
   const aclAddress = relayerSDK.SepoliaConfig.aclContractAddress;
   if (!checkIsAddress(aclAddress)) {

@@ -27,11 +27,15 @@ export class RelayerSDKLoader {
       );
     }
 
-    if ("relayerSDK" in window) {
-      if (!isFhevmRelayerSDKType(window.relayerSDK, this._trace)) {
-        console.log("[RelayerSDKLoader] window.relayerSDK === undefined");
+    // Check cả 2 tên: RelayerSDK (chữ R hoa) và relayerSDK (chữ r thường)
+    const sdk = (window as any).RelayerSDK || (window as any).relayerSDK;
+    if (sdk) {
+      if (!isFhevmRelayerSDKType(sdk, this._trace)) {
+        console.log("[RelayerSDKLoader] window.RelayerSDK/relayerSDK === undefined");
         throw new Error("RelayerSDKLoader: Unable to load FHEVM Relayer SDK");
       }
+      // Gán vào window.relayerSDK để code sau dùng được
+      (window as any).relayerSDK = sdk;
       return Promise.resolve();
     }
 
@@ -40,12 +44,18 @@ export class RelayerSDKLoader {
         `script[src="${SDK_CDN_URL}"]`
       );
       if (existingScript) {
-        if (!isFhevmWindowType(window, this._trace)) {
+        // Check cả 2 tên và gán vào window.relayerSDK nếu cần
+        const sdk = (window as any).RelayerSDK || (window as any).relayerSDK;
+        if (!sdk || !isFhevmRelayerSDKType(sdk, this._trace)) {
           reject(
             new Error(
               "RelayerSDKLoader: window object does not contain a valid relayerSDK object."
             )
           );
+        }
+        // Đảm bảo window.relayerSDK tồn tại
+        if (!(window as any).relayerSDK) {
+          (window as any).relayerSDK = sdk;
         }
         resolve();
         return;
@@ -57,13 +67,19 @@ export class RelayerSDKLoader {
       script.async = true;
 
       script.onload = () => {
-        if (!isFhevmWindowType(window, this._trace)) {
+        // Check cả 2 tên và gán vào window.relayerSDK nếu cần
+        const sdk = (window as any).RelayerSDK || (window as any).relayerSDK;
+        if (!sdk || !isFhevmRelayerSDKType(sdk, this._trace)) {
           console.log("[RelayerSDKLoader] script onload FAILED...");
           reject(
             new Error(
               `RelayerSDKLoader: Relayer SDK script has been successfully loaded from ${SDK_CDN_URL}, however, the window.relayerSDK object is invalid.`
             )
           );
+        }
+        // Đảm bảo window.relayerSDK tồn tại
+        if (!(window as any).relayerSDK) {
+          (window as any).relayerSDK = sdk;
         }
         resolve();
       };
