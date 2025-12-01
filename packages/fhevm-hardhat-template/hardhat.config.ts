@@ -16,7 +16,6 @@ dotenv.config();
 
 // Load secrets from .env
 const PRIVATE_KEY = process.env.PRIVATE_KEY || "";
-const INFURA_API_KEY = process.env.INFURA_API_KEY || "";
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "";
 
 const config: HardhatUserConfig = {
@@ -52,7 +51,7 @@ const config: HardhatUserConfig = {
       accounts: PRIVATE_KEY ? [`0x${PRIVATE_KEY}`] : [],
     },
     sepolia: {
-      url: `https://sepolia.infura.io/v3/${INFURA_API_KEY}`,
+      url: "https://ethereum-sepolia-rpc.publicnode.com",
       chainId: 11155111,
       accounts: PRIVATE_KEY ? [`0x${PRIVATE_KEY}`] : [],
     },

@@ -2,10 +2,10 @@
 pragma solidity ^0.8.24;
 
 import {FHE, euint128, externalEuint128, ebool} from "@fhevm/solidity/lib/FHE.sol";
-import {SepoliaConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
+import {ZamaEthereumConfig, ZamaConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract HushSave is SepoliaConfig {
+contract HushSave is ZamaEthereumConfig {
     IERC20 public immutable token;
     address public owner;
 
@@ -27,12 +27,14 @@ contract HushSave is SepoliaConfig {
         uint256 poolId;
         address user;
         euint128 encAmountToSend;
+        bytes32 handle;  // v0.9.1: cần handle cho checkSignatures
         bool exists;
     }
 
     mapping(uint256 => PendingWithdraw) public pending;
 
     uint256 public poolCount;
+    uint256 public nextRequestId;  // v0.9.1: counter cho requestId
     mapping(uint256 => SavingsPool) public pools;
     mapping(address => uint256[]) public userPools;
 
@@ -186,19 +188,18 @@ contract HushSave is SepoliaConfig {
         FHE.allow(encSent, address(this));
         FHE.allow(encSent, msg.sender);
 
-        // Dùng FHE.requestDecryption() thay vì manual call oracle
-        // FHE lib sẽ tự động: allowForDecryption + gọi oracle + save handles
-        bytes32[] memory cts = new bytes32[](1);
-        cts[0] = FHE.toBytes32(encSent);
-        uint256 requestId = FHE.requestDecryption(
-            cts,
-            this.completeWithdraw.selector
-        );
+        // v0.9.1: Không còn FHE.requestDecryption()
+        // Thay vào đó: lưu handle, emit event, oracle backend sẽ tự decrypt và gọi completeWithdraw
+        bytes32 handle = FHE.toBytes32(encSent);
+        
+        // Tạo requestId đơn giản bằng counter
+        uint256 requestId = nextRequestId++;
 
         pending[requestId] = PendingWithdraw({
             poolId: poolId,
             user: msg.sender,
             encAmountToSend: encSent,
+            handle: handle,  // v0.9.1: lưu handle để dùng trong checkSignatures
             exists: true
         });
 
@@ -208,14 +209,16 @@ contract HushSave is SepoliaConfig {
     function completeWithdraw(
         uint256 requestId,
         bytes memory cleartexts,
-        bytes memory decryptionProof  // Version 0.8.0 API
+        bytes memory decryptionProof  // Version 0.9.1 API
     ) public {
         require(pending[requestId].exists, "No pending request");
         PendingWithdraw storage p = pending[requestId];
         SavingsPool storage pool = pools[p.poolId];
 
-        // Verify oracle signatures (version 0.8.0)
-        FHE.checkSignatures(requestId, cleartexts, decryptionProof);
+        // Verify oracle signatures (version 0.9.1: dùng handles[] thay vì requestId)
+        bytes32[] memory handlesList = new bytes32[](1);
+        handlesList[0] = p.handle;
+        FHE.checkSignatures(handlesList, cleartexts, decryptionProof);
         
         uint128 decryptedAmount = abi.decode(cleartexts, (uint128));
 

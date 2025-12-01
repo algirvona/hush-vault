@@ -18,31 +18,13 @@ export const HushSaveABI = {
     },
     {
       "inputs": [],
-      "name": "HandlesAlreadySavedForRequestID",
-      "type": "error"
-    },
-    {
-      "inputs": [],
       "name": "InvalidKMSSignatures",
       "type": "error"
     },
     {
       "inputs": [],
-      "name": "NoHandleFoundForRequestID",
+      "name": "ZamaProtocolUnsupported",
       "type": "error"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "requestID",
-          "type": "uint256"
-        }
-      ],
-      "name": "DecryptionFulfilled",
-      "type": "event"
     },
     {
       "anonymous": false,
@@ -161,6 +143,25 @@ export const HushSaveABI = {
         }
       ],
       "name": "PoolCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes32[]",
+          "name": "handlesList",
+          "type": "bytes32[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "abiEncodedCleartexts",
+          "type": "bytes"
+        }
+      ],
+      "name": "PublicDecryptionVerified",
       "type": "event"
     },
     {
@@ -304,6 +305,19 @@ export const HushSaveABI = {
       "name": "completeWithdraw",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "confidentialProtocolId",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -475,6 +489,19 @@ export const HushSaveABI = {
     },
     {
       "inputs": [],
+      "name": "nextRequestId",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "owner",
       "outputs": [
         {
@@ -509,6 +536,11 @@ export const HushSaveABI = {
         {
           "internalType": "euint128",
           "name": "encAmountToSend",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "handle",
           "type": "bytes32"
         },
         {
@@ -585,19 +617,6 @@ export const HushSaveABI = {
         }
       ],
       "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "protocolId",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "pure",
       "type": "function"
     },
     {
